@@ -21,17 +21,17 @@ export const usersTable = pgTable(
 		username: varchar("username", {
 			length: 255,
 		}).notNull(),
-		normalizedEmail: varchar("normalized_email", {
-			length: 255,
-		}).notNull(),
 		emailVerified: boolean("email_verified").default(false),
-		agreedToTerms: boolean("agreed_to_terms").default(false),
 		hashedPassword: varchar("hashed_password").default("").notNull(),
+		createdAt: timestamp("created_at", {
+			withTimezone: true,
+			mode: "date",
+		}).notNull().defaultNow(),
 	},
 	(table) => {
 		return {
-			normalizedEmailIdx: uniqueIndex("normalized_email_idx").on(
-				table.normalizedEmail,
+			emailIdx: uniqueIndex("email_idx").on(
+				table.email,
 			),
 		};
 	},
@@ -50,6 +50,11 @@ export const emailVerificationCodesTable = pgTable("email_verification_codes", {
 	userId: varchar("user_id")
 		.notNull()
 		.references(() => usersTable.id),
+
+	createdAt: timestamp("created_at", {
+		withTimezone: true,
+		mode: "date",
+	}).notNull().defaultNow(),
 });
 
 export const sessionsTable = pgTable("sessions", {
@@ -62,6 +67,10 @@ export const sessionsTable = pgTable("sessions", {
 	userId: varchar("user_id")
 		.notNull()
 		.references(() => usersTable.id),
+	createdAt: timestamp("created_at", {
+		withTimezone: true,
+		mode: "date",
+	}).notNull().defaultNow(),
 });
 
 export const usersRelations = relations(usersTable, ({ many, one }) => ({

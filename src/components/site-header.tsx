@@ -5,47 +5,47 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { MainNav } from "@/components/main-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getUser } from "@/lib/utils.server";
+import { logout } from "@/server/actions";
 
-export function SiteHeader() {
+const SocialLink = ({ href, icon: Icon, label }) => (
+	<Link href={href} target="_blank" rel="noreferrer">
+		<div className={buttonVariants({ size: "icon", variant: "ghost" })}>
+			<Icon className="h-5 w-5" />
+			<span className="sr-only">{label}</span>
+		</div>
+	</Link>
+);
+
+export async function SiteHeader() {
+	const user = await getUser();
 	return (
 		<header className="sticky top-0 z-40 w-full border-b bg-background">
 			<div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
 				<MainNav items={siteConfig.mainNav} />
 				<div className="flex flex-1 items-center justify-end space-x-4">
 					<nav className="flex items-center space-x-1">
-						<Link href={"/login"}>
-							<Button>Login</Button>
-						</Link>
-						<Link
+						{user ? (
+							<div>
+								<form action={logout}>
+									<Button>Logout</Button>
+								</form>
+							</div>
+						) : (
+							<Link href={"/login"}>
+								<Button>Login</Button>
+							</Link>
+						)}
+						<SocialLink
 							href={siteConfig.links.github}
-							target="_blank"
-							rel="noreferrer"
-						>
-							<div
-								className={buttonVariants({
-									size: "icon",
-									variant: "ghost",
-								})}
-							>
-								<Icons.gitHub className="h-5 w-5" />
-								<span className="sr-only">GitHub</span>
-							</div>
-						</Link>
-						<Link
+							icon={Icons.gitHub}
+							label="GitHub"
+						/>
+						<SocialLink
 							href={siteConfig.links.twitter}
-							target="_blank"
-							rel="noreferrer"
-						>
-							<div
-								className={buttonVariants({
-									size: "icon",
-									variant: "ghost",
-								})}
-							>
-								<Icons.twitter className="h-5 w-5 fill-current" />
-								<span className="sr-only">Twitter</span>
-							</div>
-						</Link>
+							icon={Icons.twitter}
+							label="Twitter"
+						/>
 						<ThemeToggle />
 					</nav>
 				</div>

@@ -8,7 +8,10 @@ import { Argon2id } from "oslo/password";
 import { verifySchema } from "@/schemas/auth";
 import type { ContextVariables } from "@/server/types";
 import { lucia } from "@/services/auth";
-import { emailVerificationCodes, users } from "@/services/db/schema";
+import {
+	emailVerificationCodesTable as emailVerificationCodes,
+	usersTable as users,
+} from "@/services/drizzle/schema";
 
 export const verify = new OpenAPIHono<{
 	Variables: ContextVariables;
@@ -45,10 +48,9 @@ export const verify = new OpenAPIHono<{
 		const { email, confirmationCode, password } = c.req.valid("json");
 		const db = c.get("db");
 
-		const normalizedEmail = email.toUpperCase();
 
-		const existingUser = await db.query.users.findFirst({
-			where: eq(users.normalizedEmail, normalizedEmail),
+		const existingUser = await db.query.usersTable.findFirst({
+			where: eq(users.email, email),
 			with: {
 				emailVerificationCodes: true,
 			},

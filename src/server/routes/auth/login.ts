@@ -36,11 +36,9 @@ export const login = new OpenAPIHono<{ Variables: ContextVariables }>().openapi(
 		const { email, password } = c.req.valid("json");
 		const db = c.get("db");
 
-		const normalizedEmail = email.toUpperCase();
-
-		const existingUser = await db.query.users.findFirst({
+		const existingUser = await db.query.usersTable.findFirst({
 			where: and(
-				eq(usersTable.normalizedEmail, normalizedEmail),
+				eq(usersTable.email, email),
 				eq(usersTable.emailVerified, true),
 			),
 		});
