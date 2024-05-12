@@ -9,7 +9,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-export const users = pgTable(
+export const usersTable = pgTable(
 	"users",
 	{
 		id: varchar("id", {
@@ -37,7 +37,7 @@ export const users = pgTable(
 	},
 );
 
-export const emailVerificationCodes = pgTable("email_verification_codes", {
+export const emailVerificationCodesTable = pgTable("email_verification_codes", {
 	id: serial("id").primaryKey(),
 	code: varchar("code", {
 		length: 8,
@@ -49,10 +49,10 @@ export const emailVerificationCodes = pgTable("email_verification_codes", {
 
 	userId: varchar("user_id")
 		.notNull()
-		.references(() => users.id),
+		.references(() => usersTable.id),
 });
 
-export const sessions = pgTable("sessions", {
+export const sessionsTable = pgTable("sessions", {
 	id: text("id").primaryKey(),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
@@ -61,27 +61,27 @@ export const sessions = pgTable("sessions", {
 
 	userId: varchar("user_id")
 		.notNull()
-		.references(() => users.id),
+		.references(() => usersTable.id),
 });
 
-export const usersRelations = relations(users, ({ many, one }) => ({
-	emailVerificationCodes: many(emailVerificationCodes),
-	sessions: many(sessions),
+export const usersRelations = relations(usersTable, ({ many, one }) => ({
+	emailVerificationCodes: many(emailVerificationCodesTable),
+	sessions: many(sessionsTable),
 }));
 
 export const emailVerificationCodesRelations = relations(
-	emailVerificationCodes,
+	emailVerificationCodesTable,
 	({ one }) => ({
-		users: one(users, {
-			fields: [emailVerificationCodes.userId],
-			references: [users.id],
+		users: one(usersTable, {
+			fields: [emailVerificationCodesTable.userId],
+			references: [usersTable.id],
 		}),
 	}),
 );
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-	users: one(users, {
-		fields: [sessions.userId],
-		references: [users.id],
+export const sessionsRelations = relations(sessionsTable, ({ one }) => ({
+	users: one(usersTable, {
+		fields: [sessionsTable.userId],
+		references: [usersTable.id],
 	}),
 }));

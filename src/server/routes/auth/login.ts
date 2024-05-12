@@ -7,7 +7,7 @@ import { Argon2id } from "oslo/password";
 import { loginSchema } from "@/schemas/auth";
 import type { ContextVariables } from "@/server/types";
 import { lucia } from "@/services/auth";
-import { users } from "@/services/db/schema";
+import { usersTable } from "@/services/drizzle/schema";
 
 export const login = new OpenAPIHono<{ Variables: ContextVariables }>().openapi(
 	createRoute({
@@ -40,8 +40,8 @@ export const login = new OpenAPIHono<{ Variables: ContextVariables }>().openapi(
 
 		const existingUser = await db.query.users.findFirst({
 			where: and(
-				eq(users.normalizedEmail, normalizedEmail),
-				eq(users.emailVerified, true),
+				eq(usersTable.normalizedEmail, normalizedEmail),
+				eq(usersTable.emailVerified, true),
 			),
 		});
 

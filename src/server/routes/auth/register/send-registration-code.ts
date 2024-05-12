@@ -2,14 +2,13 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { generateId } from "lucia";
-
 import {
 	generateEmailVerificationCode,
 	sendVerificationCode,
 } from "@/lib/utils.server";
 import { sendRegistrationCodeSchema } from "@/schemas/auth";
 import type { ContextVariables } from "@/server/types";
-import { users } from "@/services/db/schema";
+import { usersTable } from "@/services/drizzle/schema";
 
 export const sendRegistrationCode = new OpenAPIHono<{
 	Variables: ContextVariables;
@@ -26,6 +25,7 @@ export const sendRegistrationCode = new OpenAPIHono<{
 					"application/json": {
 						schema: sendRegistrationCodeSchema.openapi("SendRegistrationCode", {
 							example: {
+								username: "john_doe",
 								email: "hey@example.com",
 								agree: true,
 							},
@@ -60,7 +60,7 @@ export const sendRegistrationCode = new OpenAPIHono<{
 		const normalizedEmail = email.toUpperCase();
 
 		const existingUser = await db.query.users.findFirst({
-			where: eq(users.normalizedEmail, normalizedEmail),
+			where: eq(usersTable.normalizedEmail, normalizedEmail),
 		});
 
 		if (existingUser?.emailVerified) {
@@ -71,14 +71,14 @@ export const sendRegistrationCode = new OpenAPIHono<{
 		if (!existingUser) {
 			id = generateId(15);
 			await db
-				.insert(users)
+				.insert(usersTable)
 				.values({
 					id,
 					email: email,
 					normalizedEmail,
 					agreedToTerms: agree,
 				})
-				.returning({ insertedUserId: users.id });
+				.returning({ insertedUserId: usersTable.id });
 		} else {
 			id = existingUser.id;
 		}

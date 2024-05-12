@@ -10,6 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
 	title: "Login",

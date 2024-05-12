@@ -6,7 +6,7 @@ import { authApp } from "@/server/routes/auth";
 import { secretApp } from "@/server/routes/secret";
 import type { ContextVariables } from "@/server/types";
 import { lucia } from "@/services/auth";
-import { db } from "@/services/db";
+import { db } from "@/services/drizzle/db";
 
 const app = new OpenAPIHono<{ Variables: ContextVariables }>();
 
