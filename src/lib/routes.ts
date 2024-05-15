@@ -13,6 +13,16 @@ export const Routes = {
 
 	login: makeRoute(() => "/login"),
 
+	account: makeRoute(() => "/settings"),
+	settings: {
+		profile: makeRoute(() => "/settings/profile"),
+		appearance: makeRoute(() => "/settings/appearance"),
+		notifications: makeRoute(() => "/settings/notifications"),
+		display: makeRoute(() => "/settings/display"),
+		security: makeRoute(() => "/settings/security"),
+	},
+
+
 	getStarted: makeRoute(() => "/get-started"),
 	verify: makeRoute(
 		() => "/get-started/verify",
