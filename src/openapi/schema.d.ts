@@ -191,6 +191,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/settings/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Updates the user's profile */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Request body */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfile"];
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -226,6 +265,26 @@ export interface components {
             message: string;
             /** Format: email */
             email: string;
+        };
+        /** @example {
+         *       "username": "john_doe",
+         *       "email": "hey@example.com",
+         *       "bio": "Hello, world!",
+         *       "urls": [
+         *         {
+         *           "value": "rads"
+         *         }
+         *       ]
+         *     } */
+        UpdateProfile: {
+            username: string;
+            /** Format: email */
+            email: string;
+            bio: string;
+            urls?: {
+                /** Format: uri */
+                value: string;
+            }[];
         };
     };
     responses: never;

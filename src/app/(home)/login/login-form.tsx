@@ -21,18 +21,18 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/shared/password-input";
 import { cn } from "@/lib/utils";
 import { type Login, loginSchema } from "@/schemas/auth";
-import { client } from "@/server/client";
+import { openApiClient } from "@/openapi/openapi-client";
+import { Routes } from "@/lib/routes";
 
 export function LoginForm() {
 	const { push } = useRouter();
 	const { mutate, isPending } = useMutation<unknown, Error, Login, unknown>({
 		mutationKey: ["login"],
-		mutationFn: (json: any) =>
-			client.api.auth.login.$post({
-				json,
-			}),
+		mutationFn: (body) => {
+			return openApiClient.POST("/api/auth/login", { body: body })
+		},
 		onSuccess: async () => {
-			push("/");
+			push(Routes.account());
 		},
 		onError: () => {
 			toast.error("Login failed.");

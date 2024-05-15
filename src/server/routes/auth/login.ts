@@ -33,7 +33,10 @@ export const login = new OpenAPIHono<{ Variables: ContextVariables }>().openapi(
 		},
 	}),
 	async (c) => {
+		console.log("c", c)
 		const { email, password } = c.req.valid("json");
+		console.log("email", email)
+		console.log("password", password)
 		const db = c.get("db");
 
 		const existingUser = await db.query.usersTable.findFirst({
@@ -53,6 +56,7 @@ export const login = new OpenAPIHono<{ Variables: ContextVariables }>().openapi(
 			existingUser.hashedPassword,
 			password,
 		);
+		console.log("validPassword", validPassword)
 		if (!validPassword) {
 			throw new HTTPException(400, {
 				message: "Authentication failed.",

@@ -1,4 +1,5 @@
 "use client"
+import { toast } from "sonner";
 
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,33 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
+import { useRouter } from "next/navigation"
+import { useMutation } from "@tanstack/react-query"
+import { UpdateProfile, updateProfileSchema } from "@/schemas/settings/profile"
+import { openApiClient } from "@/openapi/openapi-client"
 
-const profileFormSchema = z.object({
-  username: z
-    .string()
-    .min(2, {
-      message: "Username must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Please enter a valid URL." }),
-      })
-    )
-    .optional(),
-})
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 // This can come from your database or API.
 const defaultValues: Partial<ProfileFormValues> = {
@@ -63,31 +43,42 @@ const defaultValues: Partial<ProfileFormValues> = {
 }
 
 export function ProfileForm() {
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues,
-    mode: "onChange",
-  })
+
+  const { push } = useRouter();
+  const { mutate, isPending } = useMutation<unknown, Error, UpdateProfile, unknown>({
+    mutationKey: ["update-profile"],
+    mutationFn: (body) => {
+      return openApiClient.PATCH("/api/settings/profile", { body: body })
+    },
+    onSuccess: async () => {
+      toast.success("Profile updated successfully.")
+    },
+    onError: () => {
+      toast.error("Profile update failed.");
+    },
+  });
+
+  const form = useForm<UpdateProfile>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      email: "",
+      bio: "",
+      username: "",
+      urls: []
+    },
+    criteriaMode: "all",
+  });
+
 
   const { fields, append } = useFieldArray({
     name: "urls",
     control: form.control,
   })
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+				onSubmit={form.handleSubmit((values) => mutate(values))}>
         <FormField
           control={form.control}
           name="username"

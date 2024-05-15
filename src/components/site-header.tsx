@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 import { siteConfig } from "@/config/site";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { MainNav } from "@/components/main-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getUser } from "@/lib/utils.server";
 import { logout } from "@/server/actions";
+import { LogoutButton } from "./LogoutButton";
 
 const SocialLink = ({ href, icon: Icon, label }) => (
 	<Link href={href} target="_blank" rel="noreferrer">
@@ -16,9 +18,10 @@ const SocialLink = ({ href, icon: Icon, label }) => (
 		</div>
 	</Link>
 );
-
 export async function SiteHeader() {
 	const user = await getUser();
+
+
 	return (
 		<header className="sticky top-0 z-40 w-full border-b bg-background">
 			<div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -27,9 +30,7 @@ export async function SiteHeader() {
 					<nav className="flex items-center space-x-1">
 						{user ? (
 							<div>
-								<form action={logout}>
-									<Button>Logout</Button>
-								</form>
+							<LogoutButton/>
 							</div>
 						) : (
 							<Link href={"/login"}>

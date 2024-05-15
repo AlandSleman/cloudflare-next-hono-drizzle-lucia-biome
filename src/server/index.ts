@@ -8,6 +8,7 @@ import type { ContextVariables } from "@/server/types";
 import { lucia } from "@/services/auth";
 import { db } from "@/services/drizzle/db";
 import { Hono } from "hono";
+import { settingsApp } from "./routes/settings";
 
 const app = new OpenAPIHono<{ Variables: ContextVariables }>();
 
@@ -59,14 +60,14 @@ app.get(
 	}),
 );
 
-const routes = app.route("/", authApp).route("/", secretApp);
+const routes = app.route("/", authApp).route("/", secretApp).route("/", settingsApp)
 
 export type AppType = typeof routes;
 
 const appx = new Hono()
-  .get('/', (c) => c.json('list authors'))
-  .post('/', (c) => c.json('create an author', 201))
-  .get('/:id', (c) => c.json(`get ${c.req.param('id')}`))
+	.get('/', (c) => c.json('list authors'))
+	.post('/', (c) => c.json('create an author', 201))
+	.get('/:id', (c) => c.json(`get ${c.req.param('id')}`))
 
 export default appx
 export type AppXType = typeof appx;
