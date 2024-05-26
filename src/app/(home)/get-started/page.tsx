@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { RegisterForm } from "@/app/(auth)/get-started/register-form";
 import {
 	Card,
 	CardContent,
@@ -11,6 +10,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Routes } from "@/lib/routes";
+import { RegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
 	title: "Get Started",

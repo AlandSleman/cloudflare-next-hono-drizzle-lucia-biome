@@ -29,9 +29,11 @@ export function LoginForm() {
 	const { mutate, isPending } = useMutation<unknown, Error, Login, unknown>({
 		mutationKey: ["login"],
 		mutationFn: (body) => {
-			return openApiClient.POST("/api/auth/login", { body: body })
+			return openApiClient.POST("/api/auth/login", { body: body });
 		},
-		onSuccess: async () => {
+		// @ts-ignore
+		onSuccess: ({ response }) => {
+			console.log("res", response.ok);
 			push(Routes.account());
 		},
 		onError: () => {
